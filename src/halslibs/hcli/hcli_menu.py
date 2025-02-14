@@ -60,7 +60,11 @@ class menu:
         """
         print(f"\n{self.menu_name}:\n")
         if self.menu_header:
-            print(f'\n{self.menu_header}\n')
+            if callable(self.menu_header):
+                print(f'\n{self.menu_header}\n')
+            else:
+                print(f'\n{self.menu_header()}\n')
+                
         for menu_item in self.menu_items: 
             key, value, callback = menu_item
             print(f"\t{key.upper()}. {value}")
