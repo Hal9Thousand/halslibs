@@ -21,26 +21,27 @@ class menu:
 
         This method sets up the menu with the provided items and additional options.
 
-        Parameters:
-        menu_items (list[list[str, str, callable]]): A list of menu items. Each item is a tuple containing:
-            - A string representing the menu item key
-            - A string representing the menu item description
-            - A callable function to be executed when the item is selected
-            Default is a single item prompting to add more menu items.
+        :param menu_items: A list of menu items, where each item is a list of (index, title, callback).
+        :type menu_items: list[list[str, str, callable]]
 
-        **kwargs: Additional keyword arguments:
-            - prompt (str): Custom prompt message (default: "Select an option:")
-            - name (str): Name of the menu (default: "Main Menu")
-            - auto_start (bool): If True, automatically start the menu after initialization (default: False)
-
-        Returns:
-        None
+        :param prompt: The prompt to display when displaying the menu.
+        :type prompt: str
+        :param name: The name of the menu.
+        :type name: str
+        :param header: An optional header message to display before the menu items.
+        :type header: str
+        :param footer: An optional footer message to display after the menu items.
+        :type footer: str
+        :param auto_start: An optional boolean indicating whether to start the menu automatically.
+        :type auto_start: bool
+        
         """
         self.menu_items = self.validate_menu_items(menu_items)
         self.menu_prompt = kwargs.get("prompt", "Select an option:")
         self.menu_name = kwargs.get("name", "Main Menu")
         self.menu_header = kwargs.get("header", None)
         self.menu_footer = kwargs.get("footer", None)
+
         if kwargs.get("auto_start", False):
             self.start()
 
@@ -51,10 +52,11 @@ class menu:
         This method prints the menu name, lists all menu items with their corresponding keys,
         displays the menu prompt, and waits for user input.
 
-        Returns:
-        str: A single character representing the user's input. This can be either:
+         
+        :return: A single character representing the user's input. This can be either:
              - An uppercase letter or number corresponding to a menu item
              - "ESC" if the user pressed the Escape key
+        :rtype: str
         """
         print(f"\n{self.menu_name}:\n")
         if self.menu_header:
@@ -65,7 +67,10 @@ class menu:
         print("")
 
         print(f"{self.menu_prompt} ", end="", flush=True)
-        return menu._get_single_key()
+        user_input = menu._get_single_key()
+        print(f"{user_input}\n")
+        
+        return user_input
 
     def start(self):
         self.__main_loop() 
@@ -79,14 +84,9 @@ class menu:
 
         The loop continues until the user chooses to exit (by pressing ESC).
 
-        Parameters:
-        None
-
-        Returns:
-        None
-        """
+        """  
         user_input = self.show()
-        print(f"{user_input}\n")
+       
         if user_input == "ESC": 
             return
 
@@ -104,12 +104,17 @@ class menu:
         self.__main_loop()
 
     def confirm_sure()->bool:
+        """
+        Ask the user to confirm whether they want to proceed.
 
-        print("Aro You Sure? (y/n) ", end="", flush=True)
+        :return: True if the user confirms, False otherwise.
+        :rtype: bool
+        """
+        print("Are You Sure? (y/n) ", end="", flush=True)
         if menu._get_single_key().upper() == "Y":
             print("Y")
             return True
-        return False
+        return False 
 
     def _get_single_key():
         """
@@ -123,13 +128,10 @@ class menu:
         - Ctrl+C (^C) raises a KeyboardInterrupt
         - ESC key returns "ESC"
 
-        Returns:
-        str: A single character representing the key pressed by the user.
+        :return: A single character representing the key pressed by the user.
              For special keys:
              - "ESC" is returned for the Escape key
-
-        Raises:
-        KeyboardInterrupt: If Ctrl+C is pressed.
+        :rtype: str
         """
         if os.name == 'nt':  # Windows
             import msvcrt
@@ -144,16 +146,15 @@ class menu:
                 tty.setraw(fd)
                 key = sys.stdin.read(1)
                 if key == '\x1b':  # Check for the Escape Character
-
                     #tty.setcbreak(fd)  # Adjust to read more bytes without blocking
                     #print("Hit ESC again to exit this menu. ", end="", flush=True)
                     #additional_key = sys.stdin.read(1)
                     #if additional_key == '\x1b':
-                        return "ESC"
+                    return "ESC"
 
                 if key == '\x03':  # Ctrl+C
                     raise KeyboardInterrupt
-
+                
                 return key
             finally:
                 termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
@@ -170,12 +171,11 @@ class menu:
         menu_items (list or any): The input menu items to be validated. If not a list,
                                   it will be converted to a single-item list.
 
-        Returns:
-        list[list[str, str, callable]]: A list of validated menu items, where each item is a list containing:
+        :return:  A list of validated menu items, where each item is a list containing:
             - A string representing the menu item key (a single character or number)
             - A string representing the menu item description
             - A callable function to be executed when the item is selected (or None if not provided)
-
+        :rtype: list[list[str, str, callable]]: 
         """
         def is_lambda_function(obj):
 

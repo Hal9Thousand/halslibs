@@ -1,3 +1,3 @@
-from . import hcli
+from . import hcli, hdata
 
-__all__ = ['hcli']
+__all__ = ['hcli', 'hdata']
